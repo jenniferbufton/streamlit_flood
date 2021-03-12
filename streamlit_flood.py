@@ -165,9 +165,9 @@ for i in range(len(df_360)):
                                                         df_360['Amount Awarded'].iloc[i], df_360['Award Date'][i].strftime("%d/%m/%Y"),
                                                         df_360['URN'][i])),
         radius= 100, #df_360['Amount Awarded'].astype('float')[i]/10,
-        color='#2b8cbe',
+        color='#00441b',
         fill=True,
-        fill_color='#2b8cbe',
+        fill_color='#2ca25f',
     opacity=0.8,
     fill_opacity=0.7,
     ).add_to(marker_cluster)
