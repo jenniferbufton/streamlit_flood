@@ -90,7 +90,7 @@ df['date changed'] = pd.to_datetime(df['date changed'])
 
 st.sidebar.image('logo.png')
 
-st.sidebar.write('Enter a postcode in the "Postcode finder" widget to find a location of interest')
+st.sidebar.write('Enter a postcode in the "Postcode finder" widget to change the focus of the map and to see investments that have been made in that area.')
 
 latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=10, key=None, type='default')
 
@@ -222,7 +222,7 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 st.pyplot()
 
 # call to render Folium map in Streamlit
-st.write("### Select postcode to choose a place or zoom out to see a country-wide view:")
+st.write("### Use the 'Postcode finder' widget in the sidebar to focus on a place, or zoom out to see a country-wide view:")
 folium_static(m)
 
 st.write("### Organisations funded in that area (LSOA):")
