@@ -97,9 +97,9 @@ latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=1
 # API for OS
 #key = os.environ.get("api_key")
 
-layer = 'Outdoor_3857'
-zxy_path = 'https://api.os.uk/maps/raster/v1/zxy/{}/{{z}}/{{x}}/{{y}}.png?key={}'.format(layer, key)
-print('=> Constructed OS Maps ZXY API path: {}'.format(zxy_path))
+#layer = 'Outdoor_3857'
+#zxy_path = 'https://api.os.uk/maps/raster/v1/zxy/{}/{{z}}/{{x}}/{{y}}.png?key={}'.format(layer, key)
+#print('=> Constructed OS Maps ZXY API path: {}'.format(zxy_path))
 
 r = requests.get('https://api.postcodes.io/postcodes/{}'.format(latlon))
 lat = r.json()['result']['latitude']
