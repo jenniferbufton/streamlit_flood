@@ -12,8 +12,7 @@ from datetime import datetime
 import os
 import seaborn as sns
 import matplotlib.pyplot as plt
-import configparser
-
+import config
 
 "# Environment Agency: Live Data"
 
@@ -97,9 +96,7 @@ st.sidebar.write('Enter a postcode in the "Postcode finder" widget to find a loc
 latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=10, key=None, type='default')
 
 # API for OS
-config = configparser.ConfigParser()
-config.read('config.ini')
-key = config['api']['api_key']
+key = config.api_key
 
 layer = 'Outdoor_3857'
 zxy_path = 'https://api.os.uk/maps/raster/v1/zxy/{}/{{z}}/{{x}}/{{y}}.png?key={}'.format(layer, key)
