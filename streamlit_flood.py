@@ -203,6 +203,8 @@ st.title('Flood Relief')
 if option == "Warning no longer in force":
     'Warnings that are no longer in force are shown for 24 hours after they have been issued'
 
+
+
 ## plot 
 plot_df = df[df['status']== option]
 
@@ -218,12 +220,10 @@ try:
     locs, labels = plt.xticks()
     plt.title('{} by county area'.format(option))
     f.set(ylabel="Counties", xlabel="Number of '{}' statuses".format(option))
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    st.pyplot()
 except ValueError:
-    print('No flood warnings in place')
-
-
-st.set_option('deprecation.showPyplotGlobalUse', False)
-st.pyplot()
+    st.write("### There are no flood warnings in operation")
 
 # call to render Folium map in Streamlit
 st.write("### Use the 'Postcode finder' widget in the sidebar to focus on a place, or zoom out to see a country-wide view:")
