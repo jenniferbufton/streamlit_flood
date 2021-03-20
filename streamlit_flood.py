@@ -213,10 +213,14 @@ font = {'family' : 'Poppins', # define font
         'size'   : 10}
 plt.rc('font', **font)
 
-f = sns.barplot(y='county',x='count', data=plot_df, estimator=sum, palette='Set2', orient='h')
-locs, labels = plt.xticks()
-plt.title('{} by county area'.format(option))
-f.set(ylabel="Counties", xlabel="Number of '{}' statuses".format(option))
+try:
+    f = sns.barplot(y='county',x='count', data=plot_df, estimator=sum, palette='Set2', orient='h')
+    locs, labels = plt.xticks()
+    plt.title('{} by county area'.format(option))
+    f.set(ylabel="Counties", xlabel="Number of '{}' statuses".format(option))
+except ValueError:
+    print('No flood warnings in place')
+
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 st.pyplot()
