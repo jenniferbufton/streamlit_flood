@@ -13,8 +13,9 @@ import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-"# Environment Agency: Live Data"
+"# Environment Agency: Live Flood Data"
 
+# get data
 url = 'http://environment.data.gov.uk/flood-monitoring/id/floods'
 r = requests.get(url).json()
 
@@ -88,13 +89,14 @@ date = datetime.now()
 df_360['Award Date'] = pd.to_datetime(df_360['Award Date'])
 df['date changed'] = pd.to_datetime(df['date changed'])
 
+# add sidebar logo and input
 st.sidebar.image('logo.png')
 
 st.sidebar.write('Enter a postcode in the "Postcode finder" widget to change the focus of the map and to see investments that have been made in that area.')
 
-latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=10, key=None, type='default')
+latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=8, key=None, type='default')
 
-# API for OS
+# API for OS - remove until it is possible to reference secrets in streamlit
 #key = os.environ.get("api_key")
 
 #layer = 'Outdoor_3857'
@@ -123,6 +125,7 @@ m = folium.Map(location=[lat, lon],
  #       control = True
  #      ).add_to(m)
 
+# map 
 tile2 = folium.TileLayer(
     tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attr = 'Esri',
@@ -193,13 +196,15 @@ for i in range(len(no_df)):
     
 folium.LayerControl(collapsed = False).add_to(m)
 
-# Plot
+# sidebar options for flood relief
 
+st.sidebar.write('If there are no flood warnings or warnings that have been removed, this input will not be selectable.')
 option = st.sidebar.selectbox(
-    'Status',
+    'Status:',
      df['status'].unique())
 
-st.title('Flood Relief')
+#st.title('Flood Relief') - not required 
+
 if option == "Warning no longer in force":
     'Warnings that are no longer in force are shown for 24 hours after they have been issued'
 
@@ -223,12 +228,15 @@ try:
     st.set_option('deprecation.showPyplotGlobalUse', False)
     st.pyplot()
 except ValueError:
-    st.write("### There are no flood warnings in operation")
+    st.write("### There are currently no active warnings")
 
 # call to render Folium map in Streamlit
 st.write("### Use the 'Postcode finder' widget in the sidebar to focus on a place, or zoom out to see a country-wide view:")
+
+# add map
 folium_static(m)
 
+# add dataframe
 st.write("### Organisations funded in that area (LSOA):")
 
 df = df_360[df_360['Beneficiary Location:3:Name']== lsoa]
