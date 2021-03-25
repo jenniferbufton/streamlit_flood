@@ -103,14 +103,24 @@ latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=8
 #zxy_path = 'https://api.os.uk/maps/raster/v1/zxy/{}/{{z}}/{{x}}/{{y}}.png?key={}'.format(layer, key)
 #print('=> Constructed OS Maps ZXY API path: {}'.format(zxy_path))
 
-r = requests.get('https://api.postcodes.io/postcodes/{}'.format(latlon))
-lat = r.json()['result']['latitude']
-lon = r.json()['result']['longitude']
-lsoa = r.json()['result']['lsoa']
+try:
+    r = requests.get('https://api.postcodes.io/postcodes/{}'.format(latlon))
+    lat = r.json()['result']['latitude']
+    lon = r.json()['result']['longitude']
+    lsoa = r.json()['result']['lsoa']
+except:
+    st.sidebar.write('**This is not a valid postcode. Please try again** :sunglasses:')
+    r = requests.get('https://api.postcodes.io/postcodes/{}'.format('WC1B3HF'))
+    lat = r.json()['result']['latitude']
+    lon = r.json()['result']['longitude']
+    lsoa = r.json()['result']['lsoa']
+
+
 
 flood_df = df[df['status']=='Flood warning']
 flood_df = flood_df.sort_values('severity_level', ascending=False)
 flood_df.reset_index(inplace=True)
+
 
 m = folium.Map(location=[lat, lon],
             min_zoom=7, 
@@ -207,8 +217,6 @@ option = st.sidebar.selectbox(
 
 if option == "Warning no longer in force":
     'Warnings that are no longer in force are shown for 24 hours after they have been issued'
-
-
 
 ## plot 
 plot_df = df[df['status']== option]
