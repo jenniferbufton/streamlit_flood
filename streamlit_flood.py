@@ -1,6 +1,5 @@
+# import relevant files
 import streamlit as st
-# To make things easier later, we're also importing numpy and pandas for
-# working with sample data.
 import numpy as np
 import pandas as pd
 from streamlit_folium import folium_static
@@ -12,6 +11,7 @@ from datetime import datetime
 import os
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 
 "# Environment Agency: Live Flood Data"
 
@@ -49,6 +49,7 @@ for i in range(len(r['items'])):
     polygon_url_list.append(polygon_url)
     riverorsea_list.append(riverorsea)
 
+# create df
 df = pd.DataFrame(list(zip(flood_area_id_list, county_list, 
                 severity_list, severity_level_list, time_changed_list, flood_id_list, polygon_url_list, riverorsea_list)),
 columns = ["id", "county", "status", 'severity_level', "date changed", "latlon_url", "polygon_url", "riverorsea"])    
@@ -63,6 +64,7 @@ df['coords'] =""
 df['description']=""
 df['CTY19NM'] = ""
 
+# get polygons
 for i in range(len(df['latlon_url'])): 
     if i % 10 == 0:
         print('{} of {} urls processed.\r'.format(i, len(df)))
@@ -92,6 +94,43 @@ df['date changed'] = pd.to_datetime(df['date changed'])
 # add sidebar logo and input
 st.sidebar.image('logo.png')
 
+# sidebar text
+date_now = datetime.now()
+month_now = datetime.now().month
+
+df_360['year'] = pd.DatetimeIndex(df_360['Award Date']).year
+df_360['month'] = pd.DatetimeIndex(df_360['Award Date']).month
+
+df_month = df_360.groupby('month').agg({'URN':'count'})
+
+df_year = df_360[df_360['month'] == month_now]
+df_year = df_year.groupby('year').agg({'URN':'count','Amount Awarded':'sum' })
+
+df_year['URN'].mean()
+df_year['Amount Awarded'].mean()
+
+st.sidebar.write('In {}, an average of {} projects are awarded, and on average, £{:,} is provided in funding'.format(date_now.strftime("%B"), 
+                                                                                                        int(df_year['URN'].mean()),
+                                                                                                        df_year['Amount Awarded'].mean()))
+
+
+# sidebar plot funding over time
+plt.rc('figure', figsize=(5, 3))
+font_options = {'family' : 'poppins',
+ 'weight' : 'bold',
+ 'size' : '12'}
+plt.rc('font', **font_options)
+
+df_plot = df_360.groupby('month').agg({'Amount Awarded':'sum'})
+ax=df_plot.plot(color = '#0072d6')
+fmt = '£{x:,.0f}'
+tick = mtick.StrMethodFormatter(fmt)
+ax.yaxis.set_major_formatter(tick) 
+plt.title('Total awarded (since 2015) by month')
+st.set_option('deprecation.showPyplotGlobalUse', False)
+st.sidebar.pyplot()
+
+# sidebar postcode input
 st.sidebar.write('Enter a postcode in the "Postcode finder" widget to change the focus of the map and to see investments that have been made in that area.')
 
 latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=8, key=None, type='default')
@@ -115,12 +154,11 @@ except:
     lon = r.json()['result']['longitude']
     lsoa = r.json()['result']['lsoa']
 
-
-
 flood_df = df[df['status']=='Flood warning']
 flood_df = flood_df.sort_values('severity_level', ascending=False)
 flood_df.reset_index(inplace=True)
 
+# create map
 
 m = folium.Map(location=[lat, lon],
             min_zoom=7, 
@@ -207,26 +245,24 @@ for i in range(len(no_df)):
 folium.LayerControl(collapsed = False).add_to(m)
 
 # sidebar options for flood relief
-
 st.sidebar.write('If there are no flood warnings or warnings that have been removed, this input will not be selectable.')
 option = st.sidebar.selectbox(
     'Status:',
      df['status'].unique())
 
-#st.title('Flood Relief') - not required 
-
 if option == "Warning no longer in force":
     'Warnings that are no longer in force are shown for 24 hours after they have been issued'
 
-## plot 
+# plot 
 plot_df = df[df['status']== option]
 
 plot_df['count'] = int(1)
 
-font = {'family' : 'Poppins', # define font
-        'weight' : 'normal',
-        'size'   : 10}
-plt.rc('font', **font)
+plt.rc('figure', figsize=(10, 5))
+font_options = {'family' : 'poppins',
+ 'weight' : 'bold',
+ 'size' : '12'}
+plt.rc('font', **font_options)
 
 try:
     f = sns.barplot(y='county',x='count', data=plot_df, estimator=sum, palette='Set2', orient='h')
@@ -236,16 +272,16 @@ try:
     st.set_option('deprecation.showPyplotGlobalUse', False)
     st.pyplot()
 except ValueError:
-    st.write("### There are currently no active warnings")
+    st.sidebar.write("**There are currently no active warnings**")
 
 # call to render Folium map in Streamlit
-st.write("### Use the 'Postcode finder' widget in the sidebar to focus on a place, or zoom out to see a country-wide view:")
+st.write("#### Use the 'Postcode finder' widget in the sidebar to focus on a place, or zoom out to see a country-wide view:")
 
 # add map
 folium_static(m)
 
 # add dataframe
-st.write("### Organisations funded in that area (LSOA):")
+st.write("#### Organisations funded in that area (LSOA):")
 
 df = df_360[df_360['Beneficiary Location:3:Name']== lsoa]
 st.write(df[['URN','Recipient Org:Name', 'Amount Awarded',  'Award Date']].sort_values('Award Date'))
