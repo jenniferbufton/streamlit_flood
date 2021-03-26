@@ -109,6 +109,7 @@ df_year = df_year.groupby('year').agg({'URN':'count','Amount Awarded':'sum' })
 df_year['URN'].mean()
 df_year['Amount Awarded'].mean()
 
+st.sidebar.write('**{} data**'.format(date_now.strftime("%B")))
 st.sidebar.write('In {}, an average of {} projects are awarded, and on average, £{:,} is provided in funding'.format(date_now.strftime("%B"), 
                                                                                                         int(df_year['URN'].mean()),
                                                                                                         df_year['Amount Awarded'].mean()))
@@ -131,6 +132,7 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 st.sidebar.pyplot()
 
 # sidebar postcode input
+st.sidebar.write('**Postcode**')
 st.sidebar.write('Enter a postcode in the "Postcode finder" widget to change the focus of the map and to see investments that have been made in that area.')
 
 latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=8, key=None, type='default')
@@ -148,7 +150,7 @@ try:
     lon = r.json()['result']['longitude']
     lsoa = r.json()['result']['lsoa']
 except:
-    st.sidebar.write('**This is not a valid postcode. Please try again** :sunglasses:')
+    st.sidebar.write('*This is not a valid postcode. Please try again* :sunglasses:')
     r = requests.get('https://api.postcodes.io/postcodes/{}'.format('WC1B3HF'))
     lat = r.json()['result']['latitude']
     lon = r.json()['result']['longitude']
@@ -245,6 +247,7 @@ for i in range(len(no_df)):
 folium.LayerControl(collapsed = False).add_to(m)
 
 # sidebar options for flood relief
+st.sidebar.write('**Flood warnings**')
 st.sidebar.write('If there are no flood warnings or warnings that have been removed, this input will not be selectable.')
 option = st.sidebar.selectbox(
     'Status:',
