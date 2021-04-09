@@ -273,7 +273,7 @@ try:
     locs, labels = plt.xticks()
     plt.title('{} by county area'.format(option))
     f.set(ylabel="Counties", xlabel="Number of '{}' statuses".format(option))
-    f.yaxis.set_major_locator(MaxNLocator(integer=True))
+    f.xaxis.set_major_locator(MaxNLocator(integer=True))
     st.set_option('deprecation.showPyplotGlobalUse', False)
     st.pyplot()
 except ValueError:
