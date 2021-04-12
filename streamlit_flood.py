@@ -139,10 +139,10 @@ st.sidebar.write('Enter a postcode in the "Postcode finder" widget to change the
 latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=8, key=None, type='default')
 
 # API for OS - remove until it is possible to reference secrets in streamlit
-#key = os.environ.get("api_key")
+key = st.secrets["key"])
 
-#layer = 'Outdoor_3857'
-#zxy_path = 'https://api.os.uk/maps/raster/v1/zxy/{}/{{z}}/{{x}}/{{y}}.png?key={}'.format(layer, key)
+layer = 'Outdoor_3857'
+zxy_path = 'https://api.os.uk/maps/raster/v1/zxy/{}/{{z}}/{{x}}/{{y}}.png?key={}'.format(layer, key)
 #print('=> Constructed OS Maps ZXY API path: {}'.format(zxy_path))
 
 try:
@@ -168,13 +168,13 @@ m = folium.Map(location=[lat, lon],
             max_zoom=16,
             zoom_start=15 )
 
-#tile = folium.TileLayer(
- #       tiles = zxy_path,
- #       attr = 'Contains OS data © Crown copyright and database right {}'.format(date.year),
- #       name = 'OS Outdoor 3857',
- #       overlay = False,
- #       control = True
- #      ).add_to(m)
+tile = folium.TileLayer(
+        tiles = zxy_path,
+        attr = 'Contains OS data © Crown copyright and database right {}'.format(date.year),
+        name = 'OS Outdoor 3857',
+        overlay = False,
+        control = True
+       ).add_to(m)
 
 # map 
 tile2 = folium.TileLayer(
