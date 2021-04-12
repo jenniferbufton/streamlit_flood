@@ -138,8 +138,8 @@ st.sidebar.write('Enter a postcode in the "Postcode finder" widget to change the
 
 latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=8, key=None, type='default')
 
-# API for OS - remove until it is possible to reference secrets in streamlit
-key = st.secrets["key"]
+# API for OS 
+# key = st.secrets["key"]
 key = os.environ["key"]
 
 layer = 'Outdoor_3857'
