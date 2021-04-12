@@ -139,7 +139,7 @@ st.sidebar.write('Enter a postcode in the "Postcode finder" widget to change the
 latlon = st.sidebar.text_input('Postcode finder:', value='RH20 4EE', max_chars=8, key=None, type='default')
 
 # API for OS - remove until it is possible to reference secrets in streamlit
-key = st.secrets["key"])
+key = st.secrets["key"]
 
 layer = 'Outdoor_3857'
 zxy_path = 'https://api.os.uk/maps/raster/v1/zxy/{}/{{z}}/{{x}}/{{y}}.png?key={}'.format(layer, key)
