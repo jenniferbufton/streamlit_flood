@@ -254,39 +254,42 @@ option = st.sidebar.selectbox(
     'Status:',
      df['status'].unique())
 
-if option == "Warning no longer in force":
-    'Warnings that are no longer in force are shown for 24 hours after they have been issued'
 
-# plot 
-plot_df = df[df['status']== option]
+# plot
+with st.beta_expander('Flood warnings by county', False):
+    if option == "Warning no longer in force":
+        'Warnings that are no longer in force are shown for 24 hours after they have been issued'
+    plot_df = df[df['status']== option]
 
-plot_df['count'] = int(1)
+    plot_df['count'] = int(1)
 
-plt.rc('figure', figsize=(10, 5))
-font_options = {'family' : 'poppins',
- 'weight' : 'bold',
- 'size' : '12'}
-plt.rc('font', **font_options)
+    plt.rc('figure', figsize=(10, 5))
+    font_options = {'family' : 'monospace',
+    'weight' : 'bold',
+    'size' : '12'}
+    plt.rc('font', **font_options)
 
-try:
-    f = sns.barplot(y='county',x='count', data=plot_df, estimator=sum, palette='Set2', orient='h')
-    locs, labels = plt.xticks()
-    plt.title('{} by county area'.format(option))
-    f.set(ylabel="Counties", xlabel="Number of '{}' statuses".format(option))
-    f.xaxis.set_major_locator(MaxNLocator(integer=True))
-    st.set_option('deprecation.showPyplotGlobalUse', False)
-    st.pyplot()
-except ValueError:
-    st.sidebar.write("**There are currently no active warnings**")
+    try:
+        f = sns.barplot(y='county',x='count', data=plot_df, estimator=sum, palette='Set2', orient='h')
+        locs, labels = plt.xticks()
+        plt.title('{} by county area'.format(option))
+        f.set(ylabel="Counties", xlabel="Number of '{}' statuses".format(option))
+        f.xaxis.set_major_locator(MaxNLocator(integer=True))
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+        st.pyplot()
+    except ValueError:
+        st.sidebar.write("**There are currently no active warnings**")
 
 # call to render Folium map in Streamlit
-st.write("#### Use the 'Postcode finder' widget in the sidebar to focus on a place, or zoom out to see a country-wide view:")
+with st.beta_expander('Map', True):
+    st.write("Use the 'Postcode finder' widget in the sidebar to focus on a place, or zoom out to see a country-wide view:")
 
-# add map
-folium_static(m)
+    # add map
+    folium_static(m)
 
+with st.beta_expander('Past projects funded locally', False):
 # add dataframe
-st.write("#### Organisations funded in that area (LSOA):")
+    st.write("Organisations funded in that area (LSOA):")
+    df = df_360[df_360['Beneficiary Location:3:Name']== lsoa]
+    st.write(df[['URN','Recipient Org:Name', 'Amount Awarded',  'Award Date']].sort_values('Award Date'))
 
-df = df_360[df_360['Beneficiary Location:3:Name']== lsoa]
-st.write(df[['URN','Recipient Org:Name', 'Amount Awarded',  'Award Date']].sort_values('Award Date'))
